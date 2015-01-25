@@ -1,0 +1,203 @@
+﻿@metalic-color: #6A7059;
+@screen-background: #003D5C - #111;
+@screen-shadow: #003D5C;
+@screen-highlight: #9BCC93;
+@screen-foreground: #1A9481;/*#9BCC93*/
+
+body {
+    font-family: Consolas, sans-serif;
+    background-color: @screen-background;
+    color: @screen-foreground;
+    margin: 0px;
+	overflow: hidden;
+    text-transform: uppercase;
+}
+
+h1 {
+	font-size: 50px;
+	margin: 10px 0px;
+    text-align: center;
+    text-shadow: 2px 0px 2px @screen-foreground;
+    -webkit-animation: text_in 1s;
+}
+
+h2 {
+    padding-left: 10px;
+    text-shadow: 2px 0px 2px @screen-foreground;
+    -webkit-animation: text_in 1s;
+}
+
+h2 {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-shadow: 2px 0px 2px @screen-foreground;
+    -webkit-animation: text_in 1s;
+}
+
+.background {
+	background: -webkit-linear-gradient(270deg, @screen-background 90%, @screen-foreground 100%);
+	z-index: -1;
+	animation: horiz_move 10s infinite linear;
+	-webkit-animation: horiz_move 10s infinite linear;
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	transform: translate3d(0%, -100%, 0px);
+}
+
+@-webkit-keyframes horiz_move {
+	0% {
+		transform: translate3d(0%, -100%, 0px);
+		opacity: 0;
+	}
+	5% {
+		transform: translate3d(0%, -100%, 0px);
+		opacity: 1;
+	}
+	10% {
+		transform: translate3d(0%, 50%, 0px);
+		opacity: 0.5;
+	}
+	20% {
+		opacity: 0;
+	}
+	100% {
+		transform: translate3d(0%, 50%, 0px);
+		opacity: 0;
+	}
+}
+
+input, button {
+    font-family: Consolas, sans-serif;
+    background-color: @screen-background;
+    color: @screen-foreground;
+    border: 2px @screen-foreground solid;
+    padding: 10px;
+    text-shadow: 2px 0px 2px @screen-foreground;
+    box-shadow: 2px 0px 2px @screen-foreground;
+	width: 300px;
+	height: 20px;
+	margin: 5px;
+    -webkit-animation: text_in 1s;
+}
+
+button {
+    background-color: @screen-background;
+    color: @screen-highlight;
+    border: 2px @screen-highlight solid;
+    text-shadow: 2px 0px 2px @screen-highlight;
+    box-shadow: 2px 0px 2px @screen-highlight;
+	width: 324px;
+	height: 40px;
+    -webkit-animation: button_in 1s;
+}
+
+input:focus, button:focus {
+	border: 2px @screen-foreground solid;
+	outline: none;
+}
+
+.list_element {
+    background-color: @screen-background;
+    color: @screen-highlight;
+    border: 2px @screen-highlight solid;
+    text-shadow: 2px 0px 2px @screen-highlight;
+    box-shadow: 2px 0px 2px @screen-highlight;
+	width: 324px;
+	height: 40px;
+}
+
+.zone {
+    width: 100%;
+    height: 100%;
+    background-color: @screen-background;
+    box-shadow: 5px 5px 10px @screen-shadow inset;
+    overflow: hidden;
+    text-shadow: 2px 0px 2px @screen-foreground;
+	position: absolute;
+}
+
+.content {
+    position: absolute;
+    left: 90px;
+    top: 150px;
+	z-index: 1;
+}
+
+.timer_urgent {
+	color: @screen-highlight;
+}
+
+.timer_blink {
+    animation: urgent 0.5s infinite linear;
+    -webkit-animation: urgent 0.5s infinite linear;
+}
+
+@-webkit-keyframes urgent {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes urgent {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.card_image {
+    width: 100%;
+    text-align: center;
+    position: relative;
+}
+
+.float {
+    position: absolute;
+    top: 0px;
+    opacity: 0.1;
+}
+
+.section {
+}
+
+@-webkit-keyframes text_in {
+    0% {
+        text-shadow: 50px 0px 20px @screen-background;
+        opacity: 0.5;
+    }
+
+    100% {
+        text-shadow: 2px 0px 2px @screen-foreground;
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes button_in {
+    0% {
+        text-shadow: 50px 0px 20px @screen-background;
+        box-shadow: 50px 0px 20px @screen-background;
+        opacity: 0.5;
+    }
+
+    100% {
+        text-shadow: 2px 0px 2px @screen-highlight;
+        box-shadow: 2px 0px 2px @screen-highlight;
+        opacity: 1;
+    }
+}
