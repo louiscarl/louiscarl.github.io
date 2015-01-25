@@ -29,7 +29,7 @@ h2.action {
   -webkit-animation: text_in_highlight 1s;
 }
 .background {
-  background: -webkit-linear-gradient(270deg, #002c4b 90%, #1a9481 100%);
+  background: -webkit-linear-gradient(270deg, #002c4b 0%, #002c4b 90%, #1a9481 100%);
   z-index: -1;
   animation: horiz_move 10s infinite linear;
   -webkit-animation: horiz_move 10s infinite linear;
