@@ -27,11 +27,15 @@ h2 {
     -webkit-animation: text_in 1s;
 }
 
-h2 {
+h2.action {
+    text-shadow: 2px 0px 2px @screen-highlight;
+}
+
+.action {
     padding-left: 10px;
     padding-right: 10px;
-    text-shadow: 2px 0px 2px @screen-foreground;
-    -webkit-animation: text_in 1s;
+    color: @screen-highlight;
+    -webkit-animation: text_in_highlight 1s;
 }
 
 .background {
@@ -171,6 +175,7 @@ input:focus, button:focus {
     position: absolute;
     top: 0px;
     opacity: 0.1;
+    z-index: -1;
 }
 
 .section {
@@ -188,6 +193,18 @@ input:focus, button:focus {
     }
 }
 
+@-webkit-keyframes text_in_highlight {
+    0% {
+        text-shadow: 50px 0px 20px @screen-background;
+        opacity: 0.5;
+    }
+
+    100% {
+        text-shadow: 2px 0px 2px @screen-highlight;
+        opacity: 1;
+    }
+}
+
 @-webkit-keyframes button_in {
     0% {
         text-shadow: 50px 0px 20px @screen-background;
@@ -200,4 +217,8 @@ input:focus, button:focus {
         box-shadow: 2px 0px 2px @screen-highlight;
         opacity: 1;
     }
+}
+
+ul {
+    list-style-type: none;
 }
