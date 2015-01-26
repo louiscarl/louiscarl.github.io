@@ -170,7 +170,7 @@ button:focus {
 .float {
   position: absolute;
   top: 0px;
-  opacity: 0.1;
+  opacity: 0.5;
   z-index: -1;
 }
 @-webkit-keyframes text_in {
