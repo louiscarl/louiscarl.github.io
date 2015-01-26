@@ -1,7 +1,8 @@
 var Betrayal;
 (function (Betrayal) {
     var GameServiceConstants = {
-        playerNameCookie: "PlayerName"
+        playerNameCookie: "PlayerName",
+        playerIdCookie: "PlayerId"
     };
     var TargetWhenDead = [
         "SNAKE"
@@ -10,13 +11,28 @@ var Betrayal;
     var GameService = (function () {
         function GameService(socket, cookieStore) {
             this.hasStarted = false;
+            this.isConnected = false;
+            this.isJoining = false;
             this.playerId = null;
             this.cookieStore = cookieStore;
-            this.socket = socket;
             this.messages = [];
+            this.socket = null;
             this.name = cookieStore.get(GameServiceConstants.playerNameCookie) || "";
             this.onActionErrorCallback = this.onActionError.bind(this);
+            this.onGameChangedCallback = this.loadGame.bind(this);
+            this.onRoleMessageCallback = this.onMessage.bind(this);
+            this.connect(socket);
         }
+        GameService.prototype.connect = function (socket) {
+            this.socket = socket;
+            this.socket.on('game', this.onGameChangedCallback);
+            this.socket.on('role', this.onRoleMessageCallback);
+            var previousPlayerId = this.cookieStore.get(GameServiceConstants.playerIdCookie);
+            if (previousPlayerId && (this.name.length >= 2)) {
+                this.isJoining = true;
+                this.socket.emit('join', { uuid: previousPlayerId, name: this.name }, this.onGameJoined.bind(this));
+            }
+        };
         GameService.prototype.loadGame = function (gameData) {
             if (this.playerId === null) {
                 // ignore until we've joined
@@ -38,13 +54,9 @@ var Betrayal;
                 this.canAct = true;
                 this.messages = [];
             }
-            else if (this.hasStarted && (this.game.state == "ended")) {
+            else if (this.hasStarted && ((this.game.state == "endRound") || (this.game.state == "ended"))) {
                 this.hasStarted = false;
                 this.canAct = false;
-            }
-            if (this.canAct && (this.player.state !== 'active')) {
-                this.canAct = false;
-                this.messages.unshift("You dead");
             }
             if (this.gameChangedCallback) {
                 this.gameChangedCallback();
@@ -104,15 +116,27 @@ var Betrayal;
             }
         };
         GameService.prototype.onGameJoined = function (data) {
-            this.socket.emit('name', { "name": this.name });
             // Join the game, get our player id back
+            this.isJoining = false;
             console.log("joined", data);
-            this.playerId = data.player.id;
-            this.loadGame(data.game);
+            if (data.player) {
+                this.playerId = data.player.id;
+                this.isConnected = true;
+                this.socket.emit('name', { "name": this.name });
+                this.cookieStore.put(GameServiceConstants.playerIdCookie, this.playerId);
+                this.loadGame(data.game);
+            }
+            else {
+                // let the UI know we failed to connect
+                if (this.gameChangedCallback) {
+                    this.gameChangedCallback();
+                }
+            }
             // gameService.loadPlayer(data.player);
         };
         GameService.prototype.joinGame = function () {
-            this.socket.emit('join', this.onGameJoined.bind(this));
+            this.isJoining = true;
+            this.socket.emit('join', { name: this.name }, this.onGameJoined.bind(this));
         };
         GameService.prototype.setName = function (name) {
             if (this.name !== name) {

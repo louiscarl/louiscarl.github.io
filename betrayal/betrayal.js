@@ -26,38 +26,72 @@ var Betrayal;
     }]);
     betrayalApp.factory('gameService', ['$cookieStore', function ($cookieStore) {
         var gameService = new Betrayal.GameService(socket, $cookieStore);
-        socket.on('game', function (gameData) {
-            console.log("gameData received");
-            gameService.loadGame(gameData);
-        });
-        socket.on('role', function (data) {
-            gameService.onMessage(data);
-        });
         return gameService;
     }]);
     betrayalApp.controller('JoinCtrl', ['$scope', 'gameService', function ($scope, gameService) {
-        $scope.joinAttempted = false;
+        if (gameService.isConnected) {
+            if (gameService.hasStarted) {
+                location.hash = "#/playing/" + gameService.game.id;
+            }
+            else {
+                location.hash = "#/lobby/" + gameService.game.id;
+            }
+            return;
+        }
+        $scope.joinAttempted = gameService.isJoining;
         $scope.playerName = gameService.name;
+        $scope.hasError = false;
         $scope.isDisabled = false;
         $scope.joinGame = function () {
-            if (!$scope.joinAttempted && ($scope.playerName.length >= 2)) {
-                $scope.joinAttempted = true;
+            if (!gameService.isJoining && ($scope.playerName.length >= 2)) {
                 $scope.isDisabled = true;
+                $scope.hasError = false;
                 gameService.setName($scope.playerName);
                 gameService.joinGame();
+                $scope.joinAttempted = gameService.isJoining;
             }
         };
         gameService.setGameChangedCallback(function () {
-            if ($scope.joinAttempted) {
-                $scope.joinAttempted = false;
-                gameService.setGameChangedCallback(null);
-                location.hash = "#/lobby/" + gameService.game.id;
+            if (gameService.isJoining !== $scope.joinAttempted) {
+                $scope.joinAttempted = gameService.isJoining;
+                if (gameService.isConnected) {
+                    gameService.setGameChangedCallback(null);
+                    location.hash = "#/lobby/" + gameService.game.id;
+                }
+                else {
+                    $scope.hasError = true;
+                    $scope.$digest();
+                }
             }
         });
     }]);
-    betrayalApp.controller('LobbyCtrl', ['$scope', 'gameService', function ($scope, gameService) {
-        $scope.players = gameService.game.players;
-        $scope.isDisabled = $scope.players.length < 2;
+    betrayalApp.controller('LobbyCtrl', ['$scope', '$routeParams', 'gameService', function ($scope, $routeParams, gameService) {
+        if (!gameService.isConnected) {
+            location.hash = "#/join";
+            return;
+        }
+        else if (gameService.hasStarted) {
+            location.hash = "#/playing/" + gameService.game.id;
+            return;
+        }
+        else if ($routeParams.lobbyid != gameService.game.id) {
+            location.hash = "#/lobby/" + gameService.game.id;
+            return;
+        }
+        var updateProperties = function () {
+            var players = [];
+            for (var i in gameService.otherPlayers) {
+                var player = gameService.otherPlayers[i];
+                players.push({ id: player.id, name: player.name, role: player.role, hasWon: player.success && player.role, hasLost: !player.success && player.role });
+            }
+            $scope.players = players;
+            $scope.playerName = gameService.player.name;
+            $scope.role = gameService.player.role;
+            $scope.hasLost = !gameService.player.success && gameService.player.role;
+            $scope.hasWon = gameService.player.success && gameService.player.role;
+            $scope.isDisabled = $scope.players.length < 1;
+        };
+        updateProperties();
         $scope.startGame = function () {
             gameService.startGame();
         };
@@ -67,25 +101,32 @@ var Betrayal;
                 location.hash = "#/playing/" + gameService.game.id;
             }
             else {
-                $scope.players = gameService.game.players;
-                $scope.isDisabled = $scope.players.length < 2;
+                updateProperties();
                 $scope.$digest();
             }
         });
     }]);
-    betrayalApp.controller('PlayingCtrl', ['$scope', 'gameService', function ($scope, gameService) {
-        var getImageUrl = function (role) {
-            return 'img/rolePortraits/jpg/' + role.toLowerCase() + '.jpg';
-        };
+    betrayalApp.controller('PlayingCtrl', ['$scope', '$routeParams', 'gameService', function ($scope, $routeParams, gameService) {
+        if (!gameService.isConnected) {
+            location.hash = "#/join";
+            return;
+        }
+        else if (!gameService.hasStarted) {
+            location.hash = "#/lobby/" + gameService.game.id;
+            return;
+        }
+        else if ($routeParams.lobbyid != gameService.game.id) {
+            location.hash = "#/playing/" + gameService.game.id;
+            return;
+        }
         var updateProperties = function () {
             $scope.role = gameService.player.role;
-            $scope.roleUrl = getImageUrl(gameService.player.role);
             $scope.name = gameService.name;
             $scope.action = gameService.game.deckActions[gameService.player.role];
             $scope.targetWhenDead = gameService.targetWhenDead();
             $scope.canAct = gameService.canAct;
-            $scope.isActionDisabled = $scope.requiresTarget || !$scope.canAct;
             $scope.isAlive = gameService.player.state === 'active';
+            $scope.imgName = gameService.player.role.toLowerCase() + ($scope.isAlive ? "" : "_dead");
             var isTargetDisabled = !$scope.canAct || ($scope.targetWhenDead === $scope.isAlive);
             var otherPlayers = [];
             for (var i in gameService.otherPlayers) {

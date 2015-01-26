@@ -1,6 +1,7 @@
 module Betrayal {
     var GameServiceConstants = {
-        playerNameCookie: "PlayerName"
+        playerNameCookie: "PlayerName",
+        playerIdCookie: "PlayerId"
     };
 
     var TargetWhenDead = [
@@ -29,16 +30,38 @@ module Betrayal {
 
         hasStarted: boolean;
 
+        isConnected: boolean;
+
+        isJoining: boolean;
+
         private cookieStore: ng.cookies.ICookieStoreService;
 
         constructor(socket: SocketIOClient.Socket, cookieStore: ng.cookies.ICookieStoreService) {
             this.hasStarted = false;
+            this.isConnected = false;
+            this.isJoining = false;
             this.playerId = null;
             this.cookieStore = cookieStore;
-            this.socket = socket;
             this.messages = [];
+            this.socket = null;
             this.name = cookieStore.get(GameServiceConstants.playerNameCookie) || "";
             this.onActionErrorCallback = this.onActionError.bind(this);
+            this.onGameChangedCallback = this.loadGame.bind(this);
+            this.onRoleMessageCallback = this.onMessage.bind(this);
+
+            this.connect(socket);
+        }
+
+        connect(socket: SocketIOClient.Socket) {
+            this.socket = socket;
+            this.socket.on('game', this.onGameChangedCallback);
+            this.socket.on('role', this.onRoleMessageCallback)
+
+            var previousPlayerId = this.cookieStore.get(GameServiceConstants.playerIdCookie);
+            if (previousPlayerId && (this.name.length >= 2)) {
+                this.isJoining = true;
+                this.socket.emit('join', { uuid: previousPlayerId, name: this.name }, this.onGameJoined.bind(this));
+            }
         }
 
         loadGame(gameData: Betrayal.Server.IGame) {
@@ -63,14 +86,9 @@ module Betrayal {
                 this.hasStarted = true;
                 this.canAct = true;
                 this.messages = [];
-            } else if (this.hasStarted && (this.game.state == "ended")) {
+            } else if (this.hasStarted && ((this.game.state == "endRound") || (this.game.state == "ended"))) {
                 this.hasStarted = false;
                 this.canAct = false;
-            }
-
-            if (this.canAct && (this.player.state !== 'active')) {
-                this.canAct = false;
-                this.messages.unshift("You dead");
             }
 
             if (this.gameChangedCallback) {
@@ -98,11 +116,14 @@ module Betrayal {
             console.log("endRound");
             this.socket.emit('end', function (err, game: Betrayal.Server.IGame) {
                 console.log(err, game);
-
             });
         }
 
         private onActionErrorCallback: Function;
+
+        private onGameChangedCallback: Function;
+
+        private onRoleMessageCallback: Function;
         
         onActionError(err: string) {
             if (err) {
@@ -148,16 +169,27 @@ module Betrayal {
         }
 
         private onGameJoined(data: Betrayal.Server.IJoinResponseData) {
-            this.socket.emit('name', { "name": this.name });
             // Join the game, get our player id back
+            this.isJoining = false;
             console.log("joined", data);
-            this.playerId = data.player.id;
-            this.loadGame(data.game);
+            if (data.player) {
+                this.playerId = data.player.id;
+                this.isConnected = true;
+                this.socket.emit('name', { "name": this.name });
+                this.cookieStore.put(GameServiceConstants.playerIdCookie, this.playerId);
+                this.loadGame(data.game);
+            } else {
+                // let the UI know we failed to connect
+                if (this.gameChangedCallback) {
+                    this.gameChangedCallback();
+                }
+            }
             // gameService.loadPlayer(data.player);
         }
 
         joinGame() {
-            this.socket.emit('join', this.onGameJoined.bind(this));
+            this.isJoining = true;
+            this.socket.emit('join', { name: this.name }, this.onGameJoined.bind(this));
         }
 
         setName(name : string) {
