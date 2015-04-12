@@ -190,4 +190,18 @@ window.onload = function () {
     ren.start();
     setTimeout(ren.updateScene.bind(ren), 1000);
 };
+function launchFullscreen(element) {
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    }
+    else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+    }
+    else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+    }
+    else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+    }
+}
 //# sourceMappingURL=app.js.map
