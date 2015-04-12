@@ -127,16 +127,18 @@ var Renderer = (function () {
     }
     Renderer.prototype.updateScene = function () {
         var s = this.system.system;
+        var sun = BABYLON.Mesh.CreateSphere('sun', 4, 0.5, this.scene);
+        var sun_mat = new BABYLON.StandardMaterial("texture1", this.scene);
+        sun_mat.emissiveColor = new BABYLON.Color3(1, 1, 0);
+        sun.material = sun_mat;
+        sun.position.x = 0;
+        sun.position.y = 0;
+        sun.position.z = 0;
         for (var i = 0; i < s.length; ++i) {
             if (s[i].name) {
                 var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.2, this.scene);
-                //var sphere = BABYLON.Mesh.CreatePlane('p1', 0.2, this.scene, false);
-                //var spm = new BABYLON.SpriteManager("playerManagr", "star.png", 1, 32, this.scene);
-                //var sphere = new BABYLON.Sprite('aa', spm);
                 var mat = new BABYLON.StandardMaterial("texture1", this.scene);
                 mat.emissiveColor = new BABYLON.Color3(s[i].cr / 255, s[i].cg / 255, s[i].cb / 255);
-                //mat.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
-                //sphere.lookAt(new BABYLON.Vector3(0, 0, 0), 0, 0, 0);
                 sphere.material = mat;
                 sphere.position.x = s[i].x;
                 sphere.position.y = s[i].y;
