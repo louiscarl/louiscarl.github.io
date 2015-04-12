@@ -4,6 +4,15 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+var SolarSystem = (function () {
+    function SolarSystem() {
+        var _this = this;
+        $.getJSON('planets.js', function (data) {
+            _this.system = data;
+        });
+    }
+    return SolarSystem;
+})();
 var AsteroMath = (function () {
     function AsteroMath() {
     }
@@ -102,38 +111,34 @@ var AsteroMathTest = (function (_super) {
 var Renderer = (function () {
     function Renderer() {
         this.createScene = function () {
-            var scene = new BABYLON.Scene(this.engine);
-            scene.clearColor = new BABYLON.Color3(0, 0, 0);
-            var camera = new BABYLON.OculusCamera("camera1", new BABYLON.Vector3(0, 0, 0), scene);
+            this.scene = new BABYLON.Scene(this.engine);
+            this.scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+            var camera = new BABYLON.OculusCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
             camera.setTarget(new BABYLON.Vector3(0, 1, 0));
             camera.attachControl(this.canvas, true);
-            var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+            var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this.scene);
             light.intensity = 0.7;
-            var mars = AsteroMath.sphericalToCartesian(48.7687, -0.0240, 1.469496318582);
-            var sphere_mars = BABYLON.Mesh.CreateSphere('mars', 4, 0.05, scene);
-            sphere_mars.position.x = mars[0];
-            sphere_mars.position.y = mars[1];
-            sphere_mars.position.z = mars[2];
-            var earth = AsteroMath.sphericalToCartesian(200.5761, 0.0007, 1.001919129716);
-            var sphere_earth = BABYLON.Mesh.CreateSphere('earth', 4, 0.05, scene);
-            sphere_earth.position.x = earth[0];
-            sphere_earth.position.y = earth[1];
-            sphere_earth.position.z = earth[2];
-            var venus = AsteroMath.sphericalToCartesian(119.2499, 2.2995, 0.718544141301);
-            var sphere_venus = BABYLON.Mesh.CreateSphere('venus', 4, 0.05, scene);
-            sphere_venus.position.x = venus[0];
-            sphere_venus.position.y = venus[1];
-            sphere_venus.position.z = venus[2];
-            var mercury = AsteroMath.sphericalToCartesian(24.3062, -2.8613, 0.330189047021);
-            var sphere_mercury = BABYLON.Mesh.CreateSphere('mercury', 4, 0.05, scene);
-            sphere_mercury.position.x = mercury[0];
-            sphere_mercury.position.y = mercury[1];
-            sphere_mercury.position.z = mercury[2];
-            return scene;
+            this.system = new SolarSystem();
+            return this.scene;
         };
         this.canvas = document.getElementById("renderCanvas");
         this.engine = new BABYLON.Engine(this.canvas, true);
     }
+    Renderer.prototype.updateScene = function () {
+        var s = this.system.system;
+        var material = new BABYLON.StandardMaterial("texture1", this.scene);
+        material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+        material.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
+        for (var i = 0; i < s.length; ++i) {
+            if (s[i].name) {
+                var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.2, this.scene);
+                sphere.material = material;
+                sphere.position.x = s[i].x;
+                sphere.position.y = s[i].y;
+                sphere.position.z = s[i].z;
+            }
+        }
+    };
     Renderer.prototype.start = function () {
         var _this = this;
         var scene = this.createScene();
@@ -171,5 +176,6 @@ window.onload = function () {
     test.run();
     var ren = new Renderer();
     ren.start();
+    setTimeout(ren.updateScene.bind(ren), 1000);
 };
 //# sourceMappingURL=app.js.map
