@@ -159,7 +159,7 @@ var Renderer = (function () {
         });
         // Resize
         window.addEventListener("resize", function () {
-            _this.engine.resize();
+            //_this.engine.resize();
         });
     };
     return Renderer;
