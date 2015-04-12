@@ -32,3 +32,15 @@
     padding: 10px;
     font-family: helvetica;
 }
+
+.ui-container .title {
+    position:absolute;
+    left: 0;
+    top: 400px;
+    text-align: center;
+    width: 100%;
+    color: white;
+    padding: 10px;
+    font-family: helvetica;
+    font-size: 40pt;
+}
