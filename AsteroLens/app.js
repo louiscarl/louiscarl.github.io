@@ -112,7 +112,7 @@ var Renderer = (function () {
     function Renderer() {
         this.createScene = function () {
             this.scene = new BABYLON.Scene(this.engine);
-            this.scene.clearColor = new BABYLON.Color3(0.01, 0.01, 0.01);
+            this.scene.clearColor = new BABYLON.Color3(0.1, 0.1, 0.1);
             var camera = new BABYLON.OculusCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
             //var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
             camera.setTarget(new BABYLON.Vector3(0, 1, 0));
@@ -127,22 +127,25 @@ var Renderer = (function () {
     }
     Renderer.prototype.updateScene = function () {
         var s = this.system.system;
-        var material = new BABYLON.StandardMaterial("texture1", this.scene);
-        material.emissiveColor = new BABYLON.Color3(1, 1, 1);
-        material.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
         for (var i = 0; i < s.length; ++i) {
             if (s[i].name) {
                 var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.2, this.scene);
                 //var sphere = BABYLON.Mesh.CreatePlane('p1', 0.2, this.scene, false);
                 //var spm = new BABYLON.SpriteManager("playerManagr", "star.png", 1, 32, this.scene);
                 //var sphere = new BABYLON.Sprite('aa', spm);
+                var mat = new BABYLON.StandardMaterial("texture1", this.scene);
+                mat.emissiveColor = new BABYLON.Color3(s[i].cr / 255, s[i].cg / 255, s[i].cb / 255);
+                mat.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
                 //sphere.lookAt(new BABYLON.Vector3(0, 0, 0), 0, 0, 0);
-                //sphere.material = material;
+                sphere.material = mat;
                 sphere.position.x = s[i].x;
                 sphere.position.y = s[i].y;
                 sphere.position.z = s[i].z;
             }
         }
+        var material = new BABYLON.StandardMaterial("texture1", this.scene);
+        material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+        material.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
         for (var i = 0; i < 100; ++i) {
             var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.05, this.scene);
             sphere.material = material;
@@ -152,15 +155,14 @@ var Renderer = (function () {
         }
     };
     Renderer.prototype.start = function () {
-        var _this = this;
         var scene = this.createScene();
         this.engine.runRenderLoop(function () {
             scene.render();
         });
         // Resize
-        window.addEventListener("resize", function () {
-            _this.engine.resize();
-        });
+        //window.addEventListener("resize",() => {
+        //    this.engine.resize();
+        //});
     };
     return Renderer;
 })();
