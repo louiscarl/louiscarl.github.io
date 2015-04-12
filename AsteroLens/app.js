@@ -112,7 +112,7 @@ var Renderer = (function () {
     function Renderer() {
         this.createScene = function () {
             this.scene = new BABYLON.Scene(this.engine);
-            this.scene.clearColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+            this.scene.clearColor = new BABYLON.Color3(0.01, 0.01, 0.01);
             var camera = new BABYLON.OculusCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
             camera.setTarget(new BABYLON.Vector3(0, 1, 0));
             camera.attachControl(this.canvas, true);
@@ -137,6 +137,13 @@ var Renderer = (function () {
                 sphere.position.y = s[i].y;
                 sphere.position.z = s[i].z;
             }
+        }
+        for (var i = 0; i < 100; ++i) {
+            var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.05, this.scene);
+            sphere.material = material;
+            sphere.position.x = Math.random() * 40 - 20;
+            sphere.position.y = Math.random() * 40 - 20;
+            sphere.position.z = Math.random() * 40 - 20;
         }
     };
     Renderer.prototype.start = function () {
