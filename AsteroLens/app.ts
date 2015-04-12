@@ -341,5 +341,5 @@ function change_camera() {
 }
 
 function start() {
-    $('.ui-container').addClass('hidden');
+    $('.ui-container .text').addClass('hidden');
 }

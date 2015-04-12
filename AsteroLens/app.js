@@ -298,6 +298,6 @@ function change_camera() {
     oculus = !oculus;
 }
 function start() {
-    $('.ui-container').addClass('hidden');
+    $('.ui-container .text').addClass('hidden');
 }
 //# sourceMappingURL=app.js.map
