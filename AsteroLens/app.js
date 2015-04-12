@@ -113,8 +113,8 @@ var Renderer = (function () {
         this.createScene = function () {
             this.scene = new BABYLON.Scene(this.engine);
             this.scene.clearColor = new BABYLON.Color3(0.01, 0.01, 0.01);
-            //var camera = new BABYLON.OculusCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
-            var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
+            var camera = new BABYLON.OculusCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
+            //var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
             camera.setTarget(new BABYLON.Vector3(0, 1, 0));
             camera.attachControl(this.canvas, true);
             var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this.scene);
