@@ -113,7 +113,8 @@ var Renderer = (function () {
         this.createScene = function () {
             this.scene = new BABYLON.Scene(this.engine);
             this.scene.clearColor = new BABYLON.Color3(0.01, 0.01, 0.01);
-            var camera = new BABYLON.OculusCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
+            //var camera = new BABYLON.OculusCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
+            var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
             camera.setTarget(new BABYLON.Vector3(0, 1, 0));
             camera.attachControl(this.canvas, true);
             var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this.scene);
@@ -131,20 +132,24 @@ var Renderer = (function () {
         material.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
         for (var i = 0; i < s.length; ++i) {
             if (s[i].name) {
-                var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.2, this.scene);
-                sphere.material = material;
+                //var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.2, this.scene);
+                //var sphere = BABYLON.Mesh.CreatePlane('p1', 0.2, this.scene, false);
+                var spm = new BABYLON.SpriteManager("playerManagr", "star.png", 1, 32, this.scene);
+                var sphere = new BABYLON.Sprite('aa', spm);
+                //sphere.lookAt(new BABYLON.Vector3(0, 0, 0), 0, 0, 0);
+                //sphere.material = material;
                 sphere.position.x = s[i].x;
                 sphere.position.y = s[i].y;
                 sphere.position.z = s[i].z;
             }
         }
-        for (var i = 0; i < 100; ++i) {
-            var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.05, this.scene);
-            sphere.material = material;
-            sphere.position.x = Math.random() * 40 - 20;
-            sphere.position.y = Math.random() * 40 - 20;
-            sphere.position.z = Math.random() * 40 - 20;
-        }
+        //for (var i = 0; i < 100; ++i) {
+        //    var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.05, this.scene);
+        //    sphere.material = material;
+        //    sphere.position.x = Math.random() * 40 - 20;
+        //    sphere.position.y = Math.random() * 40 - 20;
+        //    sphere.position.z = Math.random() * 40 - 20;
+        //}
     };
     Renderer.prototype.start = function () {
         var _this = this;
