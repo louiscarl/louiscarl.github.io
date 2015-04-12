@@ -213,7 +213,7 @@ window.onload = function () {
     var ren = new Renderer();
     ren.start();
     setTimeout(ren.updateScene.bind(ren), 1000);
-    document.addEventListener('keypress', ren.next.bind(ren));
+    document.addEventListener('keyup', ren.next.bind(ren));
 };
 function launchFullscreen(element) {
     var document = window.document;
