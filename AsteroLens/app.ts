@@ -162,16 +162,21 @@ class Renderer {
                 var sphere = BABYLON.Mesh.CreateSphere('p' + i, 10, 0.2, this.scene);
 
                 var mat = new BABYLON.StandardMaterial('t' + i, this.scene);
-                mat.emissiveColor = new BABYLON.Color3(s[i].cr / 255, s[i].cg / 255, s[i].cb / 255);
+                if (s[i].cr) {
+                    mat.emissiveColor = new BABYLON.Color3(s[i].cr / 255, s[i].cg / 255, s[i].cb / 255);
+                } else {
+                    mat.emissiveColor = new BABYLON.Color3(1, 0, 1);
+                }
                 if (s[i].img) {
                     mat.diffuseTexture = new BABYLON.Texture(s[i].img, this.scene);
                     mat.diffuseTexture.wrapU = 1.0;
                     mat.diffuseTexture.wrapV = 1.0;
                 }
                 sphere.material = mat;
-                sphere.position.x = s[i].x;
-                sphere.position.y = s[i].y;
-                sphere.position.z = s[i].z;
+
+                sphere.position.x = s[i].x * 2;
+                sphere.position.y = s[i].y * 2;
+                sphere.position.z = s[i].z * 2;
             }
         }
 
@@ -183,7 +188,7 @@ class Renderer {
             var v =[Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
             var d = AsteroMath.pythagoras(v);
 
-            var nx = (Math.random() + x) / d;
+            var nx = (Math.random() + x) / d * 2;
             return [v[0] * nx, v[1] * nx, v[2] * nx];
         };
 
@@ -282,8 +287,8 @@ window.onload = () => {
 
 function launchFullscreen(element) {
     var document: any = window.document;
-    if (!document.fullscreenElement &&    // alternative standard method
-        !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {  // current working methods
+    if (!document.fullscreenElement &&
+        !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
         if (document.documentElement.requestFullscreen) {
             document.documentElement.requestFullscreen();
         } else if (document.documentElement.msRequestFullscreen) {
