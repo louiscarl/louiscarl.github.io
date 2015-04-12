@@ -223,7 +223,11 @@ class Renderer {
 
     lookAtIndex: number;
 
-    next() {
+    next(e: KeyboardEvent) {
+        if (e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39 || e.keyCode === 40) {
+            return;
+        }
+
         var s = this.system.system;
         if (this.lookAtIndex === undefined) {
             this.lookAtIndex = s.length - 1;
