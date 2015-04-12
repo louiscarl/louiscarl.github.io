@@ -124,6 +124,7 @@ var Renderer = (function () {
         };
         this.canvas = document.getElementById("renderCanvas");
         this.engine = new BABYLON.Engine(this.canvas, true);
+        this.lookAtIndex = 0;
     }
     Renderer.prototype.updateScene = function () {
         var s = this.system.system;
@@ -183,8 +184,15 @@ var Renderer = (function () {
         //});
     };
     Renderer.prototype.next = function () {
+        var s = this.system.system;
         var cam = this.scene.activeCamera;
-        cam.setTarget(new BABYLON.Vector3(-0.991, -0.106, -0.104));
+        var i = this.lookAtIndex;
+        cam.setTarget(new BABYLON.Vector3(s[i].x, s[i].y, s[i].z));
+        document.getElementById('body-name').innerText = s[i].name;
+        this.lookAtIndex = i + 1;
+        if (this.lookAtIndex >= s.length) {
+            this.lookAtIndex = 0;
+        }
     };
     return Renderer;
 })();
