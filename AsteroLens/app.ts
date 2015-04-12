@@ -120,6 +120,8 @@ class Renderer {
     engine: BABYLON.Engine;
     scene: BABYLON.Scene;
     system: SolarSystem;
+    freeCam: BABYLON.FreeCamera;
+    oculusCam: BABYLON.OculusCamera;
 
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById("renderCanvas");
@@ -131,12 +133,14 @@ class Renderer {
 
         this.scene.clearColor = new BABYLON.Color3(0.1, 0.1, 0.1);
         
-        var camera = new BABYLON.OculusCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
-        //var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
-        camera.setTarget(new BABYLON.Vector3(0, 1, 0));
-        
-        camera.attachControl(this.canvas, true);
-        
+        this.oculusCam = new BABYLON.OculusCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
+        this.oculusCam.setTarget(new BABYLON.Vector3(0, 1, 0));
+        this.oculusCam.attachControl(this.canvas, true);
+
+        this.freeCam = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 0, 0), this.scene);
+        this.freeCam.setTarget(new BABYLON.Vector3(0, 1, 0));
+        this.oculusCam.attachControl(this.canvas, true);
+
         var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this.scene);
         light.intensity = 0.7;
 
@@ -252,6 +256,7 @@ class Renderer {
     }
 }
 
+var renderer: Renderer;
 window.onload = () => {
     /*
     var r = AsteroMath.toCartesian(
@@ -277,12 +282,12 @@ window.onload = () => {
     var test = new AsteroMathTest();
     test.run();
 
-    var ren = new Renderer();
-    ren.start();
+    renderer = new Renderer();
+    renderer.start();
 
-    setTimeout(ren.updateScene.bind(ren), 1000);
+    setTimeout(renderer.updateScene.bind(renderer), 1000);
 
-    document.addEventListener('keyup', ren.next.bind(ren));
+    document.addEventListener('keyup', renderer.next.bind(renderer));
 };
 
 function launchFullscreen(element) {
@@ -309,4 +314,32 @@ function launchFullscreen(element) {
             document.webkitExitFullscreen();
         }
     }
+}
+
+var rotated = false;
+function rotate() {
+    if (!rotated) {
+        $('.ui-container').addClass('rotated');
+        $('#renderCanvas').addClass('rotated');
+    } else {
+        $('.ui-container').removeClass('rotated');
+        $('#renderCanvas').removeClass('rotated');
+    }
+    rotated = !rotated;
+}
+
+var oculus = true;
+function change_camera() {
+    if (oculus) {
+        renderer.scene.activeCamera = renderer.freeCam;
+        $('#ui-cam').text('CAMERA - MONO');
+    } else {
+        renderer.scene.activeCamera = renderer.oculusCam;
+        $('#ui-cam').text('CAMERA - STEREO');
+    }
+    oculus = !oculus;
+}
+
+function start() {
+    $('.ui-container').addClass('hidden');
 }
