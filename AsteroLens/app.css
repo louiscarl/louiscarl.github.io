@@ -24,10 +24,9 @@
 
 .ui-container .button {
     border: 2px solid white;
-    position:absolute;
-    left: calc(50% - 100px);
-    top: 200px;
-    width: 200px;
+    display: inline-block;
+    margin:10px;
+    width: 150px;
     color: white;
     padding: 10px;
     font-family: helvetica;
@@ -43,4 +42,13 @@
     font-family: helvetica;
     font-size: 40pt;
     background: rgba(0, 0, 0, 0.2);
+}
+
+.ui-container .text {
+    font-family: helvetica;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    padding: 30px;
+    top: 150px;
+    position: relative;
 }
