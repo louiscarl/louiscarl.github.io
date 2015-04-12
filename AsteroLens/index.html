@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="app.css" type="text/css" />
 </head>
 <body>
-	<canvas id="renderCanvas" width="1280" height="720" onclick="launchFullscreen(document.documentElement)"></canvas>
+	<canvas id="renderCanvas" width="1280" height="720" ondblclick="launchFullscreen(document.documentElement)"></canvas>
+	<div class="ui-container">
+		<div class="button">Look at</div>
+	</div>
 
 	<script src="planets.json"></script>
 	<script src="jquery.min.js"></script>

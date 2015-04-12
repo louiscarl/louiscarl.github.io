@@ -135,7 +135,7 @@ var Renderer = (function () {
                 //var sphere = new BABYLON.Sprite('aa', spm);
                 var mat = new BABYLON.StandardMaterial("texture1", this.scene);
                 mat.emissiveColor = new BABYLON.Color3(s[i].cr / 255, s[i].cg / 255, s[i].cb / 255);
-                mat.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
+                //mat.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
                 //sphere.lookAt(new BABYLON.Vector3(0, 0, 0), 0, 0, 0);
                 sphere.material = mat;
                 sphere.position.x = s[i].x;
@@ -145,13 +145,28 @@ var Renderer = (function () {
         }
         var material = new BABYLON.StandardMaterial("texture1", this.scene);
         material.emissiveColor = new BABYLON.Color3(1, 1, 1);
-        material.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
+        //material.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
+        var randomCoordinate = function (x) {
+            var v = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
+            var d = AsteroMath.pythagoras(v);
+            var nx = (Math.random() + x) / d;
+            return [v[0] * nx, v[1] * nx, v[2] * nx];
+        };
         for (var i = 0; i < 100; ++i) {
             var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.05, this.scene);
             sphere.material = material;
-            sphere.position.x = Math.random() * 40 - 20;
-            sphere.position.y = Math.random() * 40 - 20;
-            sphere.position.z = Math.random() * 40 - 20;
+            var c = randomCoordinate(10);
+            sphere.position.x = c[0];
+            sphere.position.y = c[1];
+            sphere.position.z = c[2];
+        }
+        for (var i = 0; i < 100; ++i) {
+            var sphere = BABYLON.Mesh.CreateSphere('p' + i, 4, 0.05, this.scene);
+            sphere.material = material;
+            var c = randomCoordinate(23);
+            sphere.position.x = c[0];
+            sphere.position.y = c[1];
+            sphere.position.z = c[2];
         }
     };
     Renderer.prototype.start = function () {
@@ -193,17 +208,34 @@ window.onload = function () {
     setTimeout(ren.updateScene.bind(ren), 1000);
 };
 function launchFullscreen(element) {
-    if (element.requestFullscreen) {
-        element.requestFullscreen();
+    var document = window.document;
+    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        }
+        else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+        }
+        else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        }
+        else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+        }
     }
-    else if (element.mozRequestFullScreen) {
-        element.mozRequestFullScreen();
-    }
-    else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
-    }
-    else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen();
+    else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+        else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+        else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        }
+        else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
     }
 }
 //# sourceMappingURL=app.js.map
