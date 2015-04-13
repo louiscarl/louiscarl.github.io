@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="app.css" type="text/css" />
 </head>
 <body>
-	<canvas id="renderCanvas" onclick="launchFullscreen(document.documentElement)"></canvas>
+	<canvas id="renderCanvas"></canvas>
 	<div class="ui-container">
 		<div class="text" id="intro">
 			<p>This project uses virtual reality to show you the Solar system as if your eyes were very far appart around the Sun. You can zoom onto a list of bodies (planets and others), and if you feel adventurous, you can fly around in the solar system.</p>
@@ -15,6 +15,7 @@
 			
 			<button class="button" id="ui-cam" onclick="change_camera()">CAMERA - STEREO</button>
 			<button class="button" id="ui-rotate" onclick="rotate()">ROTATE 180deg</button>
+			<button class="button" id="ui-rotate" onclick="launchFullscreen(document.documentElement)">Fullscreen</button>
 			<button class="button start" id="ui-start" onclick="start()">START</button>
 		</div>
 
